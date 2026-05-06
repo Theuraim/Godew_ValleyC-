@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://b11hi3i21swei"]
+
+[ext_resource type="TileSet" uid="uid://cw45kfg2c8mfk" path="res://premade/HouseTileSet.tres" id="1_frxyi"]
+
+[node name="HouseTileSet" type="Node2D" unique_id=1998616032]
+
+[node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=121236824]
+tile_set = ExtResource("1_frxyi")
