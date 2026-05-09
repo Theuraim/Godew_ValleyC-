@@ -5,14 +5,16 @@ using GameEnum;
 
 public partial class Player : CharacterBody2D
 {
+    private static readonly Vector2 ToolTargetOffset = new Vector2(0, 4);
+
 	[Export]
 	public int speed { get; set; } = 75;
 	
 	public bool canMove = true;
 	
 	Vector2 direction;
-	Vector2 lastDirection = Vector2.Down;
-	AnimationNodeStateMachinePlayback move_state_machine;
+    public Vector2 lastDirection { get; private set; } = Vector2.Down;
+    AnimationNodeStateMachinePlayback move_state_machine;
 	AnimationNodeStateMachinePlayback tool_state_machine;
 	AnimationTree animationTree;
 	
@@ -107,36 +109,16 @@ public partial class Player : CharacterBody2D
 			move_state_machine.Travel("Idle");
 		}
 	}
+
+    public Vector2 GetToolTargetPosition()
+    {
+        Vector2 dir = new Vector2(Mathf.Sign(lastDirection.X), Mathf.Sign(lastDirection.Y));
+        return GlobalPosition + (dir * Data.TILE_SIZE) + ToolTargetOffset;
+    }
 	
 	public void ToolUseEmit()
 	{
-		/*switch (currentTool)
-		{
-			case GameEnums.Tool.AXE:
-				GD.Print("Cut tree");
-				break;
-
-			case GameEnums.Tool.HOE:
-				GD.Print("Prepare soil");
-				break;
-
-			case GameEnums.Tool.WATER:
-				GD.Print("Water plant");
-				break;
-		}*/
-		Vector2 offSet = new Vector2(0, 2);
-
-        /*if (Mathf.Sign(lastDirection.Y) > 0) {
-			offSet = new Vector2(0, 1);
-		} else {
-			offSet = new Vector2(0, -1);
-		}*/
-
-        Vector2 dir = new Vector2(Mathf.Sign(lastDirection.X), Mathf.Sign(lastDirection.Y));
-
-        Vector2 targetPos = GlobalPosition + (dir * Data.TILE_SIZE);
-
-        EmitSignal(SignalName.ToolUse, (int) currentTool, targetPos);
+		EmitSignal(SignalName.ToolUse, (int)currentTool, GetToolTargetPosition());
 	}
 
 	public void OnAnimationTreeAnimationFinished(StringName animName)
