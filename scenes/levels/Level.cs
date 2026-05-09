@@ -26,6 +26,16 @@ public partial class Level : Node2D
         Vector2I.Right
     };
 
+    public static readonly Vector2I[] fAtlasCoord = new Vector2I[]
+    {
+        new Vector2I(1, 1),
+        new Vector2I(0, 4),
+        new Vector2I(1, 4),
+        new Vector2I(2, 4),
+        new Vector2I(3, 4)
+    };
+
+
     private Vector2I GlobalToMap(TileMapLayer layer, Vector2 globalPosition)
     {
         return layer.LocalToMap(layer.ToLocal(globalPosition));
@@ -33,14 +43,23 @@ public partial class Level : Node2D
 
     private HashSet<Vector2I> GetGrassBorderCells(TileMapLayer groundLayer, TileMapLayer maskLayer)
     {
-        HashSet<Vector2I> dryGrassCells = new HashSet<Vector2I>(groundLayer.GetUsedCells());
+        HashSet<Vector2I> grassCells = new HashSet<Vector2I>(groundLayer.GetUsedCells());
         HashSet<Vector2I> blockedCells = new HashSet<Vector2I>(maskLayer.GetUsedCells());
 
-        dryGrassCells.ExceptWith(blockedCells);
-        blockedCells.UnionWith(BuildExteriorBorderCells(dryGrassCells));
+        foreach (Vector2I maskCell in maskLayer.GetUsedCells())
+        {
+            foreach (Vector2I direction in CardinalDirections)
+            {
+                Vector2I neighborCell = maskCell + direction;
+
+                if (grassCells.Contains(neighborCell))
+                    blockedCells.Add(neighborCell);
+            }
+        }
 
         return blockedCells;
     }
+
 
     private static HashSet<Vector2I> BuildExteriorBorderCells(HashSet<Vector2I> grassCells)
     {
@@ -81,6 +100,7 @@ public partial class Level : Node2D
 
         foreach (Vector2I cell in grassCells)
         {
+
             foreach (Vector2I direction in CardinalDirections)
             {
                 if (!exteriorCells.Contains(cell + direction))
@@ -95,8 +115,7 @@ public partial class Level : Node2D
     }
 
 
-
-	// Called when the node enters the scene tree for the first time.
+    // Called when the node enters the scene tree for the first time.
     public override void _Ready()
 	{
 		player = GetNode<Player>("Objects/Player");
@@ -110,13 +129,12 @@ public partial class Level : Node2D
 		debugLayer = GetNode<TileMapLayer>("Layers/DebugLayer");
 
         plantSc = GD.Load<PackedScene>("res://scenes/Objects/plant.tscn");
-        blockedHoeBorderCells = GetGrassBorderCells(grassLayer, waterLayer);
-
         player.Connect(Player.SignalName.ToolUse, new Callable(this, nameof(OnToolUse)));
 	}
 
-	// Called every frame. 'delta' is the elapsed time since the previous frame.
-	public override void _PhysicsProcess(double _delta)
+
+    // Called every frame. 'delta' is the elapsed time since the previous frame.
+    public override void _PhysicsProcess(double _delta)
 	{
         Vector2 pos = player.GetToolTargetPosition();
 		gridCoord = GlobalToMap(soilLayer, pos);
@@ -125,7 +143,7 @@ public partial class Level : Node2D
 		//GD.Print("posicao do debug: " + gridCoord);
 
         debugLayer.Clear();
-        debugLayer.SetCell(gridCoord, 0, new Vector2I(1, 3));
+        debugLayer.SetCell(gridCoord, 0, new Vector2I(0, 0));
         //wetSoil.Remove(lastCell);
     }
 
@@ -149,14 +167,7 @@ public partial class Level : Node2D
 		wetSoilLayer.SetCell(cell, 0, new Vector2I(random.Next(0, 3),0));
 	}
 
-    public static readonly Vector2I[] fAtlasCoord = new Vector2I[]
-	{
-        new Vector2I(1, 1),
-        new Vector2I(0, 4),
-        new Vector2I(1, 4),
-        new Vector2I(2, 4),
-        new Vector2I(3, 4)
-    };
+
 
     private void OnToolUse(GameEnums.Tool tool, Vector2 pos)
 	{
@@ -173,24 +184,21 @@ public partial class Level : Node2D
 			case GameEnums.Tool.HOE:
 				//TileMapLayer soilLayer = GetNode<TileMapLayer>("Layers/SoilLayer"); 
 
-				TileData grasscell = grassLayer.GetCellTileData(grassCell);
-                Vector2I atlas = grassLayer.GetCellAtlasCoords(grassCell);
+				TileData grassData = grassLayer.GetCellTileData(grassCell);
+                //Vector2I atlas = grassLayer.GetCellAtlasCoords(grassCell);
 
 
-                if (grasscell == null)
+                if (grassData == null)
 					return;
 
-                if (!(bool)grasscell.GetCustomData("farmable").AsBool())
+                if (!(bool)grassData.GetCustomData("farmable").AsBool())
 					return;
                 
 				//if (!fAtlasCoord.Contains(atlas))
 				//	return;
 
-                if (blockedHoeBorderCells.Contains(grassCell))
-                    return;
-
                 soilLayer.SetCellsTerrainConnect(new Godot.Collections.Array<Vector2I> { soilCell }, 0, 0);
-				GD.Print("arando tile do solo na posicao: " + soilCell + " usando a grama da posicao: " + grassCell + " é aravel? : " + grasscell.GetCustomData("farmable").AsBool());
+				GD.Print("arando tile do solo na posicao: " + soilCell + " usando a grama da posicao: " + grassCell + " é aravel? : " + grassData.GetCustomData("farmable").AsBool());
 				
 				break;
 			case GameEnums.Tool.WATER:
