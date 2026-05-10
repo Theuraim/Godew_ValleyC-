@@ -882,6 +882,7 @@ modulate = Color(1, 1, 1, 0.7294118)
 tile_set = SubResource("TileSet_ouxo3")
 
 [node name="DebugLayer" type="TileMapLayer" parent="Layers" unique_id=1134699727]
+modulate = Color(1, 1, 1, 0.69411767)
 tile_set = SubResource("TileSet_icy5c")
 
 [node name="Objects" type="Node2D" parent="." unique_id=1460606233]

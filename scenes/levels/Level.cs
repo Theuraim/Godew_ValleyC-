@@ -17,103 +17,11 @@ public partial class Level : Node2D
     private HashSet<Vector2I> wetSoil = new();
     private HashSet<Vector2I> plantedCell = new();
     private PackedScene plantSc;
-    private HashSet<Vector2I> blockedHoeBorderCells = new();
-    private static readonly Vector2I[] CardinalDirections =
-    {
-        Vector2I.Up,
-        Vector2I.Down,
-        Vector2I.Left,
-        Vector2I.Right
-    };
-
-    public static readonly Vector2I[] fAtlasCoord = new Vector2I[]
-    {
-        new Vector2I(1, 1),
-        new Vector2I(0, 4),
-        new Vector2I(1, 4),
-        new Vector2I(2, 4),
-        new Vector2I(3, 4)
-    };
-
 
     private Vector2I GlobalToMap(TileMapLayer layer, Vector2 globalPosition)
     {
         return layer.LocalToMap(layer.ToLocal(globalPosition));
     }
-
-    private HashSet<Vector2I> GetGrassBorderCells(TileMapLayer groundLayer, TileMapLayer maskLayer)
-    {
-        HashSet<Vector2I> grassCells = new HashSet<Vector2I>(groundLayer.GetUsedCells());
-        HashSet<Vector2I> blockedCells = new HashSet<Vector2I>(maskLayer.GetUsedCells());
-
-        foreach (Vector2I maskCell in maskLayer.GetUsedCells())
-        {
-            foreach (Vector2I direction in CardinalDirections)
-            {
-                Vector2I neighborCell = maskCell + direction;
-
-                if (grassCells.Contains(neighborCell))
-                    blockedCells.Add(neighborCell);
-            }
-        }
-
-        return blockedCells;
-    }
-
-
-    private static HashSet<Vector2I> BuildExteriorBorderCells(HashSet<Vector2I> grassCells)
-    {
-        HashSet<Vector2I> borderCells = new HashSet<Vector2I>();
-
-        if (grassCells.Count == 0)
-            return borderCells;
-
-        int minX = grassCells.Min(cell => cell.X) - 1;
-        int minY = grassCells.Min(cell => cell.Y) - 1;
-        int maxX = grassCells.Max(cell => cell.X) + 1;
-        int maxY = grassCells.Max(cell => cell.Y) + 1;
-
-        Queue<Vector2I> queue = new Queue<Vector2I>();
-        HashSet<Vector2I> exteriorCells = new HashSet<Vector2I>();
-        Vector2I start = new Vector2I(minX, minY);
-
-        queue.Enqueue(start);
-        exteriorCells.Add(start);
-
-        while (queue.Count > 0)
-        {
-            Vector2I current = queue.Dequeue();
-
-            foreach (Vector2I direction in CardinalDirections)
-            {
-                Vector2I next = current + direction;
-
-                if (next.X < minX || next.X > maxX || next.Y < minY || next.Y > maxY)
-                    continue;
-
-                if (grassCells.Contains(next) || !exteriorCells.Add(next))
-                    continue;
-
-                queue.Enqueue(next);
-            }
-        }
-
-        foreach (Vector2I cell in grassCells)
-        {
-
-            foreach (Vector2I direction in CardinalDirections)
-            {
-                if (!exteriorCells.Contains(cell + direction))
-                    continue;
-
-                borderCells.Add(cell);
-                break;
-            }
-        }
-
-        return borderCells;
-    }
-
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
@@ -136,13 +44,20 @@ public partial class Level : Node2D
     // Called every frame. 'delta' is the elapsed time since the previous frame.
     public override void _PhysicsProcess(double _delta)
 	{
+        debugLayer.Clear();
+
+        if (player == null)
+            return;
+
+        if (!player.IsFocusing)
+            return;
+
+
         Vector2 pos = player.GetToolTargetPosition();
 		gridCoord = GlobalToMap(soilLayer, pos);
 
 
 		//GD.Print("posicao do debug: " + gridCoord);
-
-        debugLayer.Clear();
         debugLayer.SetCell(gridCoord, 0, new Vector2I(0, 0));
         //wetSoil.Remove(lastCell);
     }
@@ -191,7 +106,7 @@ public partial class Level : Node2D
                 if (grassData == null)
 					return;
 
-                if (!(bool)grassData.GetCustomData("farmable").AsBool())
+                if (!grassData.GetCustomData("farmable").AsBool())
 					return;
                 
 				//if (!fAtlasCoord.Contains(atlas))
