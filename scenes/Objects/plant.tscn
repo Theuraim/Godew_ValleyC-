@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://boqy2w11hcfuy"]
 
 [ext_resource type="Texture2D" uid="uid://b41e01wg87oo5" path="res://graphics/plants/wheat.png" id="1_c6gm7"]
-[ext_resource type="Script" uid="uid://dhtnli0tpy1jr" path="res://scenes/Objects/Plant.cs" id="1_enafc"]
+[ext_resource type="Script" uid="uid://dhtnli0tpy1jr" path="res://scenes/objects/Plant.cs" id="1_enafc"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_c6gm7"]
 radius = 3.0

@@ -161,6 +161,29 @@ public partial class Level : Node2D
                     plantedCell.Add(cell);
                 }
 				break;
-		}
+			case GameEnums.Tool.AXE:
+			case GameEnums.Tool.SWORD:
+				var objects = GetTree().GetNodesInGroup("Objects").OfType<Node2D>();
+                foreach (Node2D subject in objects)
+                {
+
+                    GD.Print($"Hitting {subject} with {tool}");
+
+                    if (!(subject.GlobalPosition.DistanceTo(pos) <= 20))
+						continue;
+
+                    GD.Print($"Hitting {subject} with {tool}");
+					Tree tree = tool == GameEnums.Tool.AXE ? subject as Tree : null;	
+
+					if (tree != null)
+						tree.Hit(tool);
+					// else if (tool == GameEnums.Tool.SWORD)
+					//{
+					//	GD.Print($"Attacking {subject} with {tool}");
+					//	subject.Hit(tool); }
+                }
+				break;
+
+        }
 	}
 }
