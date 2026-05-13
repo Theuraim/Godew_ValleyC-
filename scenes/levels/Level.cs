@@ -175,12 +175,15 @@ public partial class Level : Node2D
                     GD.Print($"Hitting {subject} with {tool}");
 					Tree tree = tool == GameEnums.Tool.AXE ? subject as Tree : null;	
 
+					Blob blob = tool == GameEnums.Tool.SWORD ? subject as Blob : null;
+
 					if (tree != null)
 						tree.Hit(tool);
-					// else if (tool == GameEnums.Tool.SWORD)
-					//{
-					//	GD.Print($"Attacking {subject} with {tool}");
-					//	subject.Hit(tool); }
+					else if (blob != null)
+					{
+						GD.Print($"Attacking {subject} with {tool}");
+						blob.Hit(tool); 
+					}
                 }
 				break;
 

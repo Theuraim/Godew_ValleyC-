@@ -5,9 +5,6 @@ using System;
 
 public partial class Tree : StaticBody2D
 {
-    //tree should flash when hit
-    //apple 
-    //tree is killable
     FlashSprite2d flash;
     Node2D appleSpawn;
     Node2D appleContainer;
@@ -30,6 +27,7 @@ public partial class Tree : StaticBody2D
              if (_health <= 0) {
                 flash.Hide();
                 stump.Show();
+                appleContainer.Hide();
                 RectangleShape2D shape2D = new RectangleShape2D();
                 shape2D.Size = new Vector2(12, 6); // Ajuste o tamanho conforme necessário
                 collisionShape.Shape = shape2D;
