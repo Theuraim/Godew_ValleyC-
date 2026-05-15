@@ -1,0 +1,47 @@
+[gd_scene format=3 uid="uid://brl0me0ik87pi"]
+
+[ext_resource type="Script" uid="uid://hd46hnjkdksa" path="res://scenes/ui/ToolUi.cs" id="1_440vi"]
+
+[node name="ToolUI" type="Control" unique_id=1395227419]
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_440vi")
+
+[node name="ToolContainer" type="HBoxContainer" parent="." unique_id=907196411]
+custom_minimum_size = Vector2(100, 30)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -50.0
+offset_top = -30.0
+offset_right = 50.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="SeedContainer" type="HBoxContainer" parent="." unique_id=653282105]
+custom_minimum_size = Vector2(100, 30)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -50.0
+offset_top = -30.0
+offset_right = 50.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HideTimer" type="Timer" parent="." unique_id=2103242655]
+one_shot = true

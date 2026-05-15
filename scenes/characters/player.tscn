@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://b4ntuvxamtj2b" path="res://scenes/characters/Player.cs" id="1_yewv4"]
 [ext_resource type="Texture2D" uid="uid://bp3sfnx2rutrs" path="res://graphics/characters/main/main_basic.png" id="3_6eyoc"]
+[ext_resource type="PackedScene" uid="uid://brl0me0ik87pi" path="res://scenes/ui/tool_ui.tscn" id="3_76oj4"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_atpat"]
 radius = 4.0
@@ -1489,6 +1490,7 @@ script = ExtResource("1_yewv4")
 texture = ExtResource("3_6eyoc")
 hframes = 33
 vframes = 4
+frame = 1
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1679143870]
 shape = SubResource("CapsuleShape2D_atpat")
@@ -1518,3 +1520,5 @@ parameters/ToolOneShot/request = 0
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=368977322]
 zoom = Vector2(4, 4)
+
+[node name="ToolUI" parent="." unique_id=1395227419 instance=ExtResource("3_76oj4")]

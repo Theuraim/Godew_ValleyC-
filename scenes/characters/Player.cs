@@ -27,8 +27,10 @@ public partial class Player : CharacterBody2D
 	AnimationNodeStateMachinePlayback tool_state_machine;
 	AnimationTree animationTree;
 	
-	private GameEnums.Tool currentTool;// = GameEnums.Tool.AXE;
-	private GameEnums.Seed currentSeed;
+	public  GameEnums.Tool currentTool;// = GameEnums.Tool.AXE;
+	public GameEnums.Seed currentSeed;
+
+	ToolUi toolUi;
 
 	
 	[Signal]
@@ -43,8 +45,11 @@ public partial class Player : CharacterBody2D
 		
 		tool_state_machine = (AnimationNodeStateMachinePlayback)
 		animationTree.Get("parameters/ToolStateMachine/playback");
+
+		toolUi = GetNode<ToolUi>("ToolUI");
 		
 		currentTool = GameEnums.Tool.AXE;
+		currentSeed = GameEnums.Seed.CORN;
 		
 		//Conecta os signals
 		animationTree.Connect("animation_finished", new Callable(this, nameof(OnAnimationTreeAnimationFinished)));
@@ -93,14 +98,17 @@ public partial class Player : CharacterBody2D
 			toolIndex = Math.Abs((toolIndex + dir + toolCount) % toolCount);
 			
 			currentTool = (GameEnums.Tool) toolIndex;
+
+			toolUi.Reveal(true);
 		}
 		
 		if (Input.IsActionJustPressed("seed_forward")){
-			int seedIndex = (int) currentSeed;
+            int seedIndex = (int) currentSeed;
 			int seedCount = Enum.GetValues(typeof(GameEnums.Seed)).Length;
-			seedIndex = Math.Abs((seedIndex + seedCount) % seedCount);
+			seedIndex = Math.Abs((seedIndex + 1 + seedCount) % seedCount);
 			
 			currentSeed = (GameEnums.Seed) seedIndex;
+			toolUi.Reveal();
 		}
 		
 		if (!isRunning && Input.IsActionJustPressed("action")){
